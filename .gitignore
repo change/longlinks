@@ -1,2 +1,4 @@
 *.swp
+.eslintcache
+config.json
 node_modules
