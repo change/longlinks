@@ -6,18 +6,18 @@ jobs:
     docker:
       - image: node:8.10.0-stretch
 
-  steps:
-    - checkout
+    steps:
+      - checkout
 
-    - restore_cache:
-        key: v1-npmdeps-{{ checksum "package-lock.json" }}
-    - run:
-        name: Install dependencies
-        command: npm i --progress=false
-    - save_cache:
-        key: v1-npmdeps-{{ checksum "package-lock.json" }}
-        paths: node_modules
+      - restore_cache:
+          key: v1-npmdeps-{{ checksum "package-lock.json" }}
+      - run:
+          name: Install dependencies
+          command: npm i --progress=false
+      - save_cache:
+          key: v1-npmdeps-{{ checksum "package-lock.json" }}
+          paths: node_modules
 
-    - run:
-        name: Run tests
-        command: npm test
+      - run:
+          name: Run tests
+          command: npm test
