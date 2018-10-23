@@ -8,5 +8,6 @@
     "domain1.com",
     "domain2.org"
   ],
-  "short_domain": "http://test.fake"
+  "short_domain": "http://test.fake",
+  "debug": false
 }

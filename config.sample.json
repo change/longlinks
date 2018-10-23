@@ -7,5 +7,6 @@
   "domain_whitelist": [
     "example.com"
   ],
-  "short_domain": ""
+  "short_domain": "",
+  "debug": false
 }

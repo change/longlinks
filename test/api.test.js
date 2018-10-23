@@ -16,14 +16,14 @@ function promiseToStore(body) {
       const { mock } = handleCallbackMock;
       try {
         expect(mock.calls).toHaveLength(1);
-        expect(mock.calls[0]).toHaveLength(1);
+        expect(mock.calls[0]).toHaveLength(2);
       } catch (ex) {
         reject(ex);
         return;
       }
       resolve({
         mock,
-        arg: mock.calls[0][0],
+        arg: mock.calls[0][1],
       });
     }
     try {

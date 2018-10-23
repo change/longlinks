@@ -6,6 +6,7 @@ const url = require('url');
 
 const {
   bucket,
+  debug,
   domain_whitelist: domainWhitelist,
   short_domain: shortDomain,
 } = require('../config.json'); // eslint-disable-line import/no-unresolved
@@ -16,6 +17,13 @@ const base48HashChars = '2456789bcdfghjkmnpqrstvwxyzBCDFGHJKLMNPQRSTVWXYZ';
 
 const S3 = new AWS.S3();
 
+const debugLog = (...args) => {
+  // This will output to the CloudWatch log group for this lambda function
+  if (debug) {
+    console.log(...args); // eslint-disable-line no-console
+  }
+};
+
 class HttpError extends Error {
   constructor(statusCode, message) {
     super(message);
@@ -25,6 +33,7 @@ class HttpError extends Error {
 
 async function validate(longUrl) {
   let host;
+  debugLog(`validating longUrl ${longUrl}`);
   try {
     ({ host } = url.parse(longUrl));
   } catch (ex) {
@@ -73,6 +82,7 @@ function calculateHash(longUrl) {
 }
 
 async function createS3Object({ longUrl, hash }) {
+  debugLog(`createS3Object ${hash} => ${longUrl}`);
   return S3.putObject({
     Bucket: bucket,
     Key: hash,
@@ -88,8 +98,9 @@ function sendResponse(statusCode, { message, path }, callback) {
   if (path) {
     body.url = `${shortDomain}/${path}`;
   }
+  debugLog(`sendResponse() code=${statusCode} body.url=${body.url}`);
 
-  callback({
+  callback(null, {
     headers: { 'Access-Control-Allow-Origin': '*' },
     statusCode,
     body: JSON.stringify(body),
@@ -97,19 +108,21 @@ function sendResponse(statusCode, { message, path }, callback) {
 }
 
 function returnShortUrl(callback) {
-  return hashValue => sendResponse(200, {
-    message: 'URL successfully shortened',
-    path: hashValue,
-  }, callback);
+  return (hashValue) => {
+    debugLog(`returnShortUrl() path=${hashValue}`);
+    sendResponse(200, {
+      message: 'URL successfully shortened',
+      path: hashValue,
+    }, callback);
+  };
 }
 
 function handleError(callback) {
-  return (err) => {
-    sendResponse(
-      (err && err.statusCode) || 500,
-      { message: (err && err.message) || String(err) },
-      callback
-    );
+  return (err = {}) => {
+    const code = err.statusCode || 500;
+    const message = err.message || err.stack || String(err);
+    debugLog(`handleError code=${code} message=${message}`);
+    sendResponse(code, { message }, callback);
   };
 }
 
