@@ -96,11 +96,9 @@ test('store.handle is a function', () => {
 });
 
 describe('When the request body', () => {
-  // Lambda should never send us an unparseable request body, so it's appropriate for this to just
-  // throw an error.
   test(
-    'is not parseable as JSON, we get an Error object',
-    () => expect(promiseToStore('')).rejects.toBeInstanceOf(Error)
+    'is not parseable as JSON, we get a 400 response',
+    () => expect(promiseToStore('')).resolves.toHaveStatusCode(400)
   );
 
   // Whereas this is a legit mistake on the part of the caller

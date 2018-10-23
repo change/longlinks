@@ -114,9 +114,15 @@ function handleError(callback) {
 }
 
 module.exports.handle = ({ body }, context, callback) => {
-  const longUrl = JSON.parse(body).url;
+  let longUrl;
+  try {
+    longUrl = JSON.parse(body).url;
+  } catch (ex) {
+    sendResponse(400, { message: 'Event doesn\'t contain a parseable JSON body' }, callback);
+    return;
+  }
   if (!longUrl) {
-    sendResponse(400, { message: 'Request body must contain a `url` to be shortened' }, callback);
+    sendResponse(400, { message: 'Event body must contain a `url` to be shortened' }, callback);
     return;
   }
   validate(longUrl)
