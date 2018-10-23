@@ -8,7 +8,7 @@ const {
   bucket,
   domain_whitelist: domainWhitelist,
   short_domain: shortDomain,
-} = require('../config.json');
+} = require('../config.json'); // eslint-disable-line import/no-unresolved
 
 // Vowels, l, 0, 1, 3 removed mostly to prevent hash forming bad words. The letter 'l' removed to
 // avoid ambiguity if user has to manually transcribe short hash.
@@ -24,10 +24,18 @@ class HttpError extends Error {
 }
 
 async function validate(longUrl) {
-  const { host } = url.parse(longUrl);
+  let host;
+  try {
+    ({ host } = url.parse(longUrl));
+  } catch (ex) {
+    throw new HttpError(400, 'Not a valid URL');
+  }
   const suffixMatcher = suffix => suffix === host || _.endsWith(host, `.${suffix}`);
   if (!_.find(domainWhitelist, suffixMatcher)) {
-    throw new HttpError(400, 'Not an allowed domain for shortening');
+    throw new HttpError(
+      400,
+      `Not an allowed domain for shortening: ${host}, whitelist: ${domainWhitelist}`
+    );
   }
   return longUrl;
 }
@@ -92,15 +100,14 @@ function returnShortUrl(callback) {
   return hashValue => sendResponse(200, {
     message: 'URL successfully shortened',
     path: hashValue,
-    callback,
-  });
+  }, callback);
 }
 
 function handleError(callback) {
   return (err) => {
     sendResponse(
-      err.statusCode || 500,
-      { message: err.message || String(err) },
+      (err && err.statusCode) || 500,
+      { message: (err && err.message) || String(err) },
       callback
     );
   };
@@ -108,6 +115,10 @@ function handleError(callback) {
 
 module.exports.handle = ({ body }, context, callback) => {
   const longUrl = JSON.parse(body).url;
+  if (!longUrl) {
+    sendResponse(400, { message: 'Request body must contain a `url` to be shortened' }, callback);
+    return;
+  }
   validate(longUrl)
     .then(calculateHash)
     .then(createS3Object)
