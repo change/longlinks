@@ -118,7 +118,7 @@ function returnShortUrl(callback) {
   return (hashValue) => {
     debugLog(`returnShortUrl() path=${hashValue}`);
     sendResponse(200, {
-      message: 'URL successfully shortened',
+      message: 'OK',
       path: hashValue,
     }, callback);
   };

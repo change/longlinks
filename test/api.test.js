@@ -126,7 +126,7 @@ describe('When the `url` property', () => {
   );
 
   test(
-    'contains an allowed domain string, but in the path, nice try but still 400',
+    'contains an allowed domain string, but in the path. Nice try but still 400',
     () => expectStatusForUrl('https://www.evil.com/https://www.domain1.com', 400)
   );
 
