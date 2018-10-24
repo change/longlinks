@@ -4,7 +4,7 @@
   "region": "us-west-2",
   "stage": "dev",
   "api_endpoint_type": "EDGE",
-  "domain_whitelist": [
+  "domain_safe_list": [
     "example.com"
   ],
   "short_domain": "",

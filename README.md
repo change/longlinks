@@ -11,7 +11,7 @@ The serverless scaffolding for this was largely lifted from
 
 `longlinks` uses a consistent hashing algorithm to convert long URLs into short hashes, encoded with
 a base-48 alphanumeric character set. It is optimized for ease of operation, cost effectiveness at
-scale, and for generating URLs suitable for social media sharing.  A whitelist of supported domains
+scale, and for generating URLs suitable for social media sharing.  A list of safe/supported domains
 must be specified as part of your configuration.
 
 > **Note:** The consistent hashing algorithm allows for fast and simple link _creation_, but also
@@ -54,7 +54,7 @@ Create a file called `config.json` in the longlinks directory.  You can start by
 | Field              | Description                                               |
 | :----------------- | :-------------------------------------------------------- |
 | `bucket`           | The name of the S3 bucket you want to create / deploy to  |
-| `domain_whitelist` | List of domains that your shortener will shorten URLs for |
+| `domain_safe_list` | List of domains that your shortener will shorten URLs for |
 | `short_domain`     | If you have a short domain, you'll also need to configure it as an alias for your S3 bucket's _static website hostname_, later. |
 
 ## Deploying
@@ -81,7 +81,7 @@ file with that name will have been created in your S3 bucket, and accessing that
 _static website hostname_ (ie., the one with the hostname including `<bucket-name>.s3-website-`) for
 the bucket will result in a 301 redirect to your destination URL!
 
-Attempts to shorten invalid URLs, or anything not matching the `domain_whitelist` will result in a
+Attempts to shorten invalid URLs, or anything not matching the `domain_safe_list` will result in a
 400 response.
 
 ### Specifying a custom hash length

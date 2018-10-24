@@ -8,7 +8,7 @@ const url = require('url');
 const {
   bucket,
   debug,
-  domain_whitelist: domainWhitelist,
+  domain_safe_list: domainSafeList,
   short_domain: shortDomain,
 } = require('../config.json'); // eslint-disable-line import/no-unresolved
 
@@ -41,11 +41,8 @@ async function validate(longUrl) {
     throw new HttpError(400, 'Not a valid URL');
   }
   const suffixMatcher = suffix => suffix === host || endsWith(host, `.${suffix}`);
-  if (!find(domainWhitelist, suffixMatcher)) {
-    throw new HttpError(
-      400,
-      `Not an allowed domain for shortening: ${host}, whitelist: ${domainWhitelist}`
-    );
+  if (!find(domainSafeList, suffixMatcher)) {
+    throw new HttpError(400, `Not an allowed domain for shortening: ${host}`);
   }
   return longUrl;
 }
@@ -57,9 +54,7 @@ function base48encode(input, maxLength) {
   let result = '';
 
   do {
-    const quotientAndRemainder = workingValue.divideAndRemainder(base);
-    const quotient = quotientAndRemainder[0];
-    const remainder = quotientAndRemainder[1];
+    const [quotient, remainder] = workingValue.divideAndRemainder(base);
     result = base48HashChars.charAt(remainder.intValue()) + result;
     workingValue = quotient;
   }
@@ -91,65 +86,53 @@ function calculateHash(hashLength = 10) {
 
 async function createS3Object({ longUrl, hash }) {
   debugLog(`createS3Object ${hash} => ${longUrl}`);
-  return S3.putObject({
-    Bucket: bucket,
-    Key: hash,
-    WebsiteRedirectLocation: longUrl,
-  })
-    .promise()
-    .then(() => hash);
+  await S3.putObject({ Bucket: bucket, Key: hash, WebsiteRedirectLocation: longUrl }).promise();
+  return hash;
 }
 
-function sendResponse(statusCode, { message, path }, callback) {
+function buildResponse(statusCode, { message, path }) {
   const body = { message, path };
 
   if (path) {
     body.url = `${shortDomain}/${path}`;
   }
-  debugLog(`sendResponse() code=${statusCode} body.url=${body.url}`);
+  debugLog(`buildResponse() code=${statusCode} body.url=${body.url}`);
 
-  callback(null, {
+  return {
     headers: { 'Access-Control-Allow-Origin': '*' },
     statusCode,
     body: JSON.stringify(body),
-  });
-}
-
-function returnShortUrl(callback) {
-  return (hashValue) => {
-    debugLog(`returnShortUrl() path=${hashValue}`);
-    sendResponse(200, {
-      message: 'OK',
-      path: hashValue,
-    }, callback);
   };
 }
 
-function handleError(callback) {
-  return (err = {}) => {
-    const code = err.statusCode || 500;
-    const message = err.message || err.stack || String(err);
-    debugLog(`handleError code=${code} message=${message}`);
-    sendResponse(code, { message }, callback);
-  };
+function handleError(err = {}) {
+  const code = err.statusCode || 500;
+  const message = err.message || err.stack || String(err);
+  debugLog(`handleError code=${code} message=${message}`);
+  return buildResponse(code, { message });
 }
 
 module.exports.handle = ({ body }, context, callback) => {
+  function sendResponse(response) {
+    callback(null, response);
+  }
+
   let parsedBody;
   try {
     parsedBody = JSON.parse(body);
   } catch (ex) {
-    sendResponse(400, { message: 'Event doesn\'t contain a parseable JSON body' }, callback);
+    sendResponse(buildResponse(400, { message: 'Event doesn\'t contain a parseable JSON body' }));
     return;
   }
   const { url: longUrl, hashLength } = parsedBody;
   if (!longUrl) {
-    sendResponse(400, { message: 'Event body must contain a `url` to be shortened' }, callback);
+    sendResponse(buildResponse(400, { message: 'Event body must contain a `url` to be shortened' }));
     return;
   }
+
   validate(longUrl)
     .then(calculateHash(hashLength))
     .then(createS3Object)
-    .then(returnShortUrl(callback))
-    .catch(handleError(callback));
+    .then(path => sendResponse(buildResponse(200, { message: 'OK', path })))
+    .catch(err => sendResponse(handleError(err)));
 };
