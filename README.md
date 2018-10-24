@@ -11,7 +11,8 @@ The serverless scaffolding for this was largely lifted from
 
 `longlinks` uses a consistent hashing algorithm to convert long URLs into short hashes, encoded with
 a base-48 alphanumeric character set. It is optimized for ease of operation, cost effectiveness at
-scale, and for generating URLs suitable for social media sharing.
+scale, and for generating URLs suitable for social media sharing.  A whitelist of supported domains
+must be specified as part of your configuration.
 
 > **Note:** The consistent hashing algorithm allows for fast and simple link _creation_, but also
 means that there's a very small but non-zero chance of "collisions", where two different URLs
@@ -79,3 +80,16 @@ The response will show you the short hash value for that URL, as well as the fin
 file with that name will have been created in your S3 bucket, and accessing that file via the
 _static website hostname_ (ie., the one with the hostname including `<bucket-name>.s3-website-`) for
 the bucket will result in a 301 redirect to your destination URL!
+
+Attempts to shorten invalid URLs, or anything not matching the `domain_whitelist` will result in a
+400 response.
+
+### Specifying a custom hash length
+
+By default, longlinks generates 10-character hashes.  But you can specify any length in the range
+[7, 12] characters by including a `hashLength` parameter in the JSON body.  Shorter hashes will have
+a greater chance of collisions, but that might be acceptable for certain uses.
+
+```
+  -d '{"url":"http://example.com","hashLength":7}'
+```
