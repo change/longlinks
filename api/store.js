@@ -70,14 +70,21 @@ function base48encode(input, maxLength) {
 // Hash algorithm
 // 1 - take 64 bit FNV hash of string
 // 2 - hash again the 'to string' of the first hash (base-10 text)
-// 3 - keep the last 10 digits of (2) base 48 encoded
-function calculateHash(longUrl) {
-  // double hash to improve mixing where only small changes are made to input
-  const hashValue = fnv.hash(longUrl, 64).value;
-  const hashValueTwice = fnv.hash(hashValue.toString(), 64).value;
-  return {
-    longUrl,
-    hash: base48encode(hashValueTwice, 10),
+// 3 - keep the last `hashLength` digits of (2) base 48 encoded
+function calculateHash(hashLength = 10) {
+  const min = 7;
+  const max = 12;
+  return (longUrl) => {
+    if (!Number(hashLength) || hashLength < min || hashLength > max) {
+      throw new HttpError(400, `'hashLength' must be a value in the range [${min}, ${max}]`);
+    }
+    // double hash to improve mixing where only small changes are made to input
+    const hashValue = fnv.hash(longUrl, 64).value;
+    const hashValueTwice = fnv.hash(hashValue.toString(), 64).value;
+    return {
+      longUrl,
+      hash: base48encode(hashValueTwice, hashLength),
+    };
   };
 }
 
@@ -127,19 +134,20 @@ function handleError(callback) {
 }
 
 module.exports.handle = ({ body }, context, callback) => {
-  let longUrl;
+  let parsedBody;
   try {
-    longUrl = JSON.parse(body).url;
+    parsedBody = JSON.parse(body);
   } catch (ex) {
     sendResponse(400, { message: 'Event doesn\'t contain a parseable JSON body' }, callback);
     return;
   }
+  const { url: longUrl, hashLength } = parsedBody;
   if (!longUrl) {
     sendResponse(400, { message: 'Event body must contain a `url` to be shortened' }, callback);
     return;
   }
   validate(longUrl)
-    .then(calculateHash)
+    .then(calculateHash(hashLength))
     .then(createS3Object)
     .then(returnShortUrl(callback))
     .catch(handleError(callback));

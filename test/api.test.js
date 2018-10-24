@@ -40,15 +40,17 @@ function promiseToStore(body) {
   });
 }
 
-const promiseToStoreUrl = url => promiseToStore(`{"url":"${url}"}`);
+const promiseToStoreUrl = (url, hashLength) => promiseToStore(JSON.stringify({ url, hashLength }));
+
+const promiseToStoreWithHashLength = hashLength => promiseToStoreUrl('http://domain1.com/', hashLength);
 
 const expectPromiseToStoreUrl = url => expect(promiseToStoreUrl(url));
 
 const expectStatusForUrl = (url, status) => expectPromiseToStoreUrl(url).resolves
   .toHaveStatusCode(status);
 
-const expectSuccessfulShortening = async (url) => {
-  const promise = promiseToStoreUrl(url);
+const expectSuccessfulShortening = async (url, hashLength) => {
+  const promise = promiseToStoreUrl(url, hashLength);
   await expect(promise).resolves.toMatchObject({
     arg: {
       headers: { 'Access-Control-Allow-Origin': '*' },
@@ -63,10 +65,10 @@ const expectSuccessfulShortening = async (url) => {
       url: expect.any(String),
       message: expect.any(String),
     });
-    expect(body.path).toHaveLength(10);
+    expect(body.path).toHaveLength(hashLength || 10);
     expect(body.url).toStartWith(testConfig.short_domain);
     expect(body.url).toEndWith(body.path);
-    return true;
+    return body;
   });
 };
 
@@ -101,7 +103,6 @@ describe('When the request body', () => {
     () => expect(promiseToStore('')).resolves.toHaveStatusCode(400)
   );
 
-  // Whereas this is a legit mistake on the part of the caller
   test(
     'doesn\'t contain a `url` property, we get a 400 response',
     () => expect(promiseToStore('{"foo":"bar"}')).resolves.toHaveStatusCode(400)
@@ -145,5 +146,34 @@ describe('When the `url` property', () => {
   test(
     'is a path on a subdomain of a bare domain, succeeds',
     () => expectSuccessfulShortening('https://subdomain.domain2.org/')
+  );
+});
+
+describe('When the `hashLength` property', () => {
+  test(
+    'is not a number, we get a 400 response',
+    () => expect(promiseToStoreWithHashLength('foo')).resolves.toHaveStatusCode(400)
+  );
+
+  test(
+    'is < 7, we get a 400 response',
+    () => expect(promiseToStoreWithHashLength(6)).resolves.toHaveStatusCode(400)
+  );
+
+  test(
+    'is > 12, we get a 400 response',
+    () => expect(promiseToStoreWithHashLength(13)).resolves.toHaveStatusCode(400)
+  );
+
+  test(
+    'is in range, we get back a hash of the specified length',
+    () => expectSuccessfulShortening('http://domain1.com', 12)
+      .then(({ path }) => expect(path).toHaveLength(12))
+  );
+
+  test(
+    'is not specified, we get back a hash of length 10',
+    () => expectSuccessfulShortening('http://domain2.org')
+      .then(({ path }) => expect(path).toHaveLength(10))
   );
 });
