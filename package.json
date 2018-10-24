@@ -17,7 +17,9 @@
     "aws-sdk": "^2.338.0",
     "fnv-plus": "^1.2.12",
     "jsbn": "^1.1.0",
-    "lodash": "^4.17.11"
+    "lodash.endswith": "^4.2.1",
+    "lodash.find": "^4.6.0",
+    "lodash.get": "^4.4.2"
   },
   "devDependencies": {
     "eslint": "^5.5.0",

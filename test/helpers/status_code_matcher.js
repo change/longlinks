@@ -1,4 +1,4 @@
-const { get } = require('lodash');
+const get = require('lodash.get');
 
 module.exports.toHaveStatusCode = (received, expected) => {
   const receivedStatusCode = Number(get(received, 'arg.statusCode'));

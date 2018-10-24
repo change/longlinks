@@ -1,4 +1,5 @@
-const _ = require('lodash');
+const endsWith = require('lodash.endswith');
+const find = require('lodash.find');
 const AWS = require('aws-sdk');
 const { BigInteger } = require('jsbn');
 const fnv = require('fnv-plus');
@@ -27,7 +28,7 @@ const debugLog = (...args) => {
 class HttpError extends Error {
   constructor(statusCode, message) {
     super(message);
-    _.assign(this, { statusCode });
+    this.statusCode = statusCode;
   }
 }
 
@@ -39,8 +40,8 @@ async function validate(longUrl) {
   } catch (ex) {
     throw new HttpError(400, 'Not a valid URL');
   }
-  const suffixMatcher = suffix => suffix === host || _.endsWith(host, `.${suffix}`);
-  if (!_.find(domainWhitelist, suffixMatcher)) {
+  const suffixMatcher = suffix => suffix === host || endsWith(host, `.${suffix}`);
+  if (!find(domainWhitelist, suffixMatcher)) {
     throw new HttpError(
       400,
       `Not an allowed domain for shortening: ${host}, whitelist: ${domainWhitelist}`
