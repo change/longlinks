@@ -13,6 +13,11 @@ The serverless scaffolding for this was largely lifted from
 a base-48 alphanumeric character set. It is optimized for ease of operation, cost effectiveness at
 scale, and for generating URLs suitable for social media sharing.
 
+> **Note:** The consistent hashing algorithm allows for fast and simple link _creation_, but also
+means that there's a very small but non-zero chance of "collisions", where two different URLs
+shorten to the same value. If your links will stay relevant in perpetuity, it's probably not the
+approach you want.
+
 ## Installing
 
 Either checkout this repo, or else just install via npm:
