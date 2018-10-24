@@ -45,9 +45,11 @@ Also install the serverless CLI tool via npm:
 Create a file called `config.json` in the longlinks directory.  You can start by copying
 `config.sample.json`, and filling in a few details, especially:
 
-| *bucket*           | The name of the S3 bucket you want to create / deploy to  |
-| *domain_whitelist* | List of domains that your shortener will shorten URLs for |
-| *short_domain*     | If you have a short domain, you'll also need to configure it as an alias for your S3 bucket's _static website hostname_, later. |
+| Field              | Description                                               |
+| :----------------- | :-------------------------------------------------------- |
+| `bucket`           | The name of the S3 bucket you want to create / deploy to  |
+| `domain_whitelist` | List of domains that your shortener will shorten URLs for |
+| `short_domain`     | If you have a short domain, you'll also need to configure it as an alias for your S3 bucket's _static website hostname_, later. |
 
 ## Deploying
 
