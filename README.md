@@ -10,13 +10,13 @@ The serverless scaffolding for this was largely lifted from
 [tutorial](https://medium.freecodecamp.org/how-to-build-a-serverless-url-shortener-using-aws-lambda-and-s3-4fbdf70cbf5c).
 
 `longlinks` uses a consistent hashing algorithm to convert long URLs into short hashes, encoded with
-a base-48 alphanumeric character set. It is optimized for ease of operation, cost effectiveness at
-scale, and for generating URLs suitable for social media sharing.  A list of safe/supported domains
-must be specified as part of your configuration.
+a base-48 alphanumeric character set.  It is optimized for ease of operation, cost effectiveness at
+scale, and for generating URLs suitable for social media sharing.  A list of allowed domains (for
+input URLs) must be specified as part of your configuration.
 
 > **Note:** The consistent hashing algorithm allows for fast and simple link _creation_, but also
 means that there's a very small but non-zero chance of "collisions", where two different URLs
-shorten to the same value. If your links will stay relevant in perpetuity, it's probably not the
+shorten to the same value.  If your links will stay relevant in perpetuity, it's probably not the
 approach you want.
 
 ## Installing
@@ -54,8 +54,12 @@ Create a file called `config.json` in the longlinks directory.  You can start by
 | Field              | Description                                               |
 | :----------------- | :-------------------------------------------------------- |
 | `bucket`           | The name of the S3 bucket you want to create / deploy to  |
-| `domain_safe_list` | List of domains that your shortener will shorten URLs for |
+| `domain_safe_list` | List of input domains that your shortener will accept     |
 | `short_domain`     | If you have a short domain, you'll also need to configure it as an alias for your S3 bucket's _static website hostname_, later. |
+
+If you are going to use a short domain, you probably want to manage the DNS records for it using
+Amazon Route 53, in which case Amazon requires that your bucket name _matches_ the short domain.
+So, for example use `"bucket": "xyz.io"` and `"short_domain": "http://xyz.io"`.
 
 ## Deploying
 
