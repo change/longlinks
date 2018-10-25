@@ -1,6 +1,10 @@
 const endsWith = require('lodash.endswith');
 const find = require('lodash.find');
-const AWS = require('aws-sdk');
+
+// Since this is always included implicitly by Lambda, we include it as a devDependency in order to
+// avoid the unnessary bloating of the .zip bundle.
+const AWS = require('aws-sdk'); // eslint-disable-line import/no-extraneous-dependencies
+
 const { BigInteger } = require('jsbn');
 const fnv = require('fnv-plus');
 const url = require('url');
