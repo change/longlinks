@@ -65,6 +65,7 @@ const expectSuccessfulShortening = async (url, hashLength) => {
       url: expect.any(String),
       message: expect.any(String),
     });
+    expect(body.message.length).toBeGreaterThanOrEqual(1);
     expect(body.path).toHaveLength(hashLength || 10);
     expect(body.url).toStartWith(testConfig.short_domain);
     expect(body.url).toEndWith(body.path);
