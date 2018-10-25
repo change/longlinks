@@ -14,7 +14,6 @@
     "node": "8.10.0"
   },
   "dependencies": {
-    "aws-sdk": "^2.338.0",
     "fnv-plus": "^1.2.12",
     "jsbn": "^1.1.0",
     "lodash.endswith": "^4.2.1",
@@ -22,6 +21,7 @@
     "lodash.get": "^4.4.2"
   },
   "devDependencies": {
+    "aws-sdk": "^2.342.0",
     "eslint": "^5.5.0",
     "eslint-config-change-base": "^5.0.0",
     "eslint-plugin-import": "^2.14.0",
