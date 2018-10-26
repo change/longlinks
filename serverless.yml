@@ -1,0 +1,44 @@
+service: change-longlinks
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  endpointType: ${file(config.json):api_endpoint_type}
+  stage: ${file(config.json):stage}
+  region: ${file(config.json):region}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - s3:PutObject
+      Resource: "arn:${file(config.json):s3_partition}:s3:::${file(config.json):bucket}/*"
+
+functions:
+  store:
+    handler: api/store.handle
+    events:
+      - http:
+          path: /
+          method: post
+          cors: true
+
+resources:
+  Resources:
+    ServerlesslyRedirectS3Bucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${file(config.json):bucket}
+        AccessControl: PublicRead
+        WebsiteConfiguration:
+          IndexDocument: index.html
+    ServerlesslyRedirectS3BucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: ${file(config.json):bucket}
+        PolicyDocument:
+          Statement:
+            - Action:
+                - s3:GetObject
+              Effect: Allow
+              Resource:
+                - arn:${file(config.json):s3_partition}:s3:::${file(config.json):bucket}/*
+              Principal: "*"

@@ -1,2 +1,5 @@
 *.swp
+.eslintcache
+.serverless
+config.json
 node_modules
