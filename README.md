@@ -24,8 +24,8 @@ approach you want.
 Either checkout this repo, or else just install via npm:
 
 ```sh
-  npm install longlinks
-  cd node_modules/longlinks
+  npm install @change-org/longlinks
+  cd node_modules/@change-org/longlinks
 ```
 
 The longlinks package is actually a deployable serverless app.  Deploying it will automatically
