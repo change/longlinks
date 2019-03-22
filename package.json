@@ -1,6 +1,6 @@
 {
   "name": "@change-org/longlinks",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A serverless URL shortener that leverages Amazon Lambda for short link creation, and S3 for link storage and redirection.",
   "author": "Change Engineering",
   "license": "MIT",
@@ -22,17 +22,17 @@
   },
   "devDependencies": {
     "@change-org/eslint-plugin-change": "^1.1.0",
-    "aws-sdk": "^2.342.0",
-    "eslint": "^5.5.0",
-    "eslint-config-change-base": "^7.0.0",
-    "eslint-plugin-import": "^2.14.0",
-    "eslint-plugin-jest": "^22.1.2",
+    "aws-sdk": "^2.425.0",
+    "eslint": "^5.15.2",
+    "eslint-config-change-base": "^8.0.0",
+    "eslint-plugin-import": "^2.16.0",
+    "eslint-plugin-jest": "^22.4.1",
     "eslint-plugin-lodash": "^5.1.0",
-    "eslint-plugin-mocha": "^5.2.0",
+    "eslint-plugin-mocha": "^5.3.0",
     "eslint-plugin-promise": "^4.0.1",
     "eslint-plugin-security": "^1.4.0",
-    "jest": "^23.6.0",
-    "jest-extended": "^0.11.0"
+    "jest": "^24.5.0",
+    "jest-extended": "^0.11.1"
   },
   "scripts": {
     "lint": "eslint . --cache",
@@ -40,6 +40,8 @@
     "test": "jest"
   },
   "jest": {
-    "setupTestFrameworkScriptFile": "jest-extended"
+    "setupFilesAfterEnv": [
+      "jest-extended"
+    ]
   }
 }
