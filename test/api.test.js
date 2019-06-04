@@ -127,6 +127,11 @@ describe('When the `url` property', () => {
   );
 
   test(
+    'even more sneakily prepends the allowed domain to a malicious domain with an encoded character',
+    () => expectStatusForUrl('https://www.domain1.com%2Eevil.com?foo=bar', 400)
+  );
+
+  test(
     'contains an allowed domain string, but in the path. Nice try but still 400',
     () => expectStatusForUrl('https://www.evil.com/https://www.domain1.com', 400)
   );

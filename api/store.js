@@ -37,12 +37,17 @@ class HttpError extends Error {
 }
 
 async function validate(longUrl) {
-  let host;
+  let parsed;
   debugLog(`validating longUrl ${longUrl}`);
   try {
-    ({ host } = url.parse(longUrl));
+    parsed = url.parse(longUrl);
   } catch (ex) {
     throw new HttpError(400, 'Not a valid URL');
+  }
+  const { host, path } = parsed;
+  if (path.charAt(0) !== '/') {
+    // Disallow anything with a doctored path
+    throw new HttpError(400, 'Not a valid URL for shortening');
   }
   const suffixMatcher = suffix => suffix === host || endsWith(host, `.${suffix}`);
   if (!find(domainSafeList, suffixMatcher)) {
