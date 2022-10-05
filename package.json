@@ -11,7 +11,7 @@
   "homepage": "https://github.com/change/longlinks",
   "bugs": "https://github.com/change/longlinks/issues",
   "engines": {
-    "node": ">=12"
+    "node": ">=16"
   },
   "dependencies": {
     "fnv-plus": "^1.2.12",
