@@ -1,6 +1,6 @@
 {
   "name": "@change-org/longlinks",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "A serverless URL shortener that leverages Amazon Lambda for short link creation, and S3 for link storage and redirection.",
   "author": "Change Engineering",
   "license": "MIT",
@@ -11,7 +11,7 @@
   "homepage": "https://github.com/change/longlinks",
   "bugs": "https://github.com/change/longlinks/issues",
   "engines": {
-    "node": ">=12"
+    "node": ">=16"
   },
   "dependencies": {
     "fnv-plus": "^1.2.12",

@@ -4,7 +4,7 @@ jobs:
   build:
     working_directory: ~/change/longlinks
     docker:
-      - image: node:8.10.0-stretch
+      - image: cimg/node:16.16.0
 
     steps:
       - checkout
@@ -16,7 +16,8 @@ jobs:
           command: npm i --progress=false
       - save_cache:
           key: v1-npmdeps-{{ checksum "package-lock.json" }}
-          paths: node_modules
+          paths:
+            - node_modules
 
       - run:
           name: Run tests
