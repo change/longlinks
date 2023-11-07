@@ -19,7 +19,7 @@ const {
 // avoid ambiguity if user has to manually transcribe short hash.
 const base48HashChars = '2456789bcdfghjkmnpqrstvwxyzBCDFGHJKLMNPQRSTVWXYZ';
 
-const s3 = S3Client({ region });
+const s3 = new S3Client({ region });
 
 const debugLog = (...args) => {
   // This will output to the CloudWatch log group for this lambda function
