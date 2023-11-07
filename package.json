@@ -14,7 +14,7 @@
     "node": ">=18"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.441.0",
+    "@aws-sdk/client-s3": "^3.445.0",
     "fnv-plus": "^1.2.12",
     "jsbn": "^1.1.0",
     "lodash.endswith": "^4.2.1",
