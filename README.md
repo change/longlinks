@@ -55,6 +55,7 @@ Create a file called `config.json` in the longlinks directory.  You can start by
 | :----------------- | :-------------------------------------------------------- |
 | `bucket`           | The name of the S3 bucket you want to create / deploy to  |
 | `domain_safe_list` | List of input domains that your shortener will accept     |
+| `region`           | The AWS region where your S3 bucket lives                 |
 | `short_domain`     | If you have a short domain, you'll also need to configure it as an alias for your S3 bucket's _static website hostname_, later. |
 
 If you are going to use a short domain, you probably want to manage the DNS records for it using
