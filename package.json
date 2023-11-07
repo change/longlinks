@@ -1,6 +1,6 @@
 {
   "name": "@change-org/longlinks",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "A serverless URL shortener that leverages Amazon Lambda for short link creation, and S3 for link storage and redirection.",
   "author": "Change Engineering",
   "license": "MIT",
@@ -11,7 +11,7 @@
   "homepage": "https://github.com/change/longlinks",
   "bugs": "https://github.com/change/longlinks/issues",
   "engines": {
-    "node": ">=16"
+    "node": ">=18"
   },
   "dependencies": {
     "fnv-plus": "^1.2.12",
@@ -22,7 +22,7 @@
   },
   "devDependencies": {
     "@change-org/eslint-plugin-change": "^1.1.0",
-    "aws-sdk": "^2.425.0",
+    "aws-sdk": "^2.1489.0",
     "eslint": "^5.16.0",
     "eslint-config-change-base": "^9.0.0",
     "eslint-plugin-import": "^2.18.2",
