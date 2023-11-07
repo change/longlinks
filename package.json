@@ -19,7 +19,8 @@
     "jsbn": "^1.1.0",
     "lodash.endswith": "^4.2.1",
     "lodash.find": "^4.6.0",
-    "lodash.get": "^4.4.2"
+    "lodash.get": "^4.4.2",
+    "tslib": "^2.5.0"
   },
   "devDependencies": {
     "@change-org/eslint-plugin-change": "^1.1.0",
