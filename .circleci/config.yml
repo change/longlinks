@@ -4,7 +4,7 @@ jobs:
   build:
     working_directory: ~/change/longlinks
     docker:
-      - image: cimg/node:18
+      - image: cimg/node:18.18.2
 
     steps:
       - checkout
