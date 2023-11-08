@@ -5,7 +5,7 @@ const { toHaveStatusCode } = require('./helpers/status_code_matcher');
 expect.extend({ toHaveStatusCode });
 
 let handleCallbackMock;
-let s3putObjectMock;
+let s3sendPromiseMock;
 let store;
 
 // Wrap calls to store.handle in a promise for easier testing
@@ -78,18 +78,19 @@ beforeEach(() => {
 
   // Make sure we load the test config
   jest.doMock('../config.json', () => testConfig);
-  store = require('../api/store');
 
   // Mock the AWS command(s)
-  jest.doMock('aws-sdk', () => ({
-    S3: class S3 {
-      putObject(...args) {
-        return s3putObjectMock.apply(this, args);
-      }
+  jest.doMock('@aws-sdk/client-s3', () => ({
+    S3Client: function S3Client() {
+      this.send = () => s3sendPromiseMock;
+    },
+    PutObjectCommand: function PutObjectCommand(input) {
+      this.input = input;
     },
   }));
-  s3putObjectMock = () => ({ promise: () => Promise.resolve() });
+  s3sendPromiseMock = Promise.resolve();
 
+  store = require('../api/store');
   handleCallbackMock = jest.fn();
 });
 
@@ -137,9 +138,9 @@ describe('When the `url` property', () => {
   );
 
   test(
-    'is good but S3.putObject promise rejects, we get a 500 response',
+    'is good but S3.send() promise rejects, we get a 500 response',
     () => {
-      s3putObjectMock = () => ({ promise: () => Promise.reject() });
+      s3sendPromiseMock = Promise.reject();
       return expectStatusForUrl('https://domain1.com/', 500);
     }
   );

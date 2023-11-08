@@ -1,9 +1,7 @@
 const endsWith = require('lodash.endswith');
 const find = require('lodash.find');
 
-// Since this is always included implicitly by Lambda, we include it as a devDependency in order to
-// avoid the unnessary bloating of the .zip bundle.
-const AWS = require('aws-sdk'); // eslint-disable-line import/no-extraneous-dependencies
+const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 
 const { BigInteger } = require('jsbn');
 const fnv = require('fnv-plus');
@@ -13,6 +11,7 @@ const {
   bucket,
   debug,
   domain_safe_list: domainSafeList,
+  region,
   short_domain: shortDomain,
 } = require('../config.json'); // eslint-disable-line import/no-unresolved
 
@@ -20,7 +19,7 @@ const {
 // avoid ambiguity if user has to manually transcribe short hash.
 const base48HashChars = '2456789bcdfghjkmnpqrstvwxyzBCDFGHJKLMNPQRSTVWXYZ';
 
-const S3 = new AWS.S3();
+const s3 = new S3Client({ region });
 
 const debugLog = (...args) => {
   // This will output to the CloudWatch log group for this lambda function
@@ -95,7 +94,13 @@ function calculateHash(hashLength = 10) {
 
 async function createS3Object({ longUrl, hash }) {
   debugLog(`createS3Object ${hash} => ${longUrl}`);
-  await S3.putObject({ Bucket: bucket, Key: hash, WebsiteRedirectLocation: longUrl }).promise();
+  await s3.send(
+    new PutObjectCommand({
+      Bucket: bucket,
+      Key: hash,
+      WebsiteRedirectLocation: longUrl,
+    })
+  );
   return hash;
 }
 
