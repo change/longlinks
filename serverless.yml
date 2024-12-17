@@ -2,7 +2,7 @@ service: change-longlinks
 
 provider:
   name: aws
-  runtime: nodejs18.x
+  runtime: nodejs22.x
   endpointType: ${file(config.json):api_endpoint_type}
   stage: ${file(config.json):stage}
   region: ${file(config.json):region}
