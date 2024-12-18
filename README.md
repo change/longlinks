@@ -1,4 +1,4 @@
-[![CircleCI](https://circleci.com/gh/change/longlinks/tree/master.svg?style=svg&circle-token=12bd98027541fe8fa0b4b9a250cdf8f9fe0a2ba0)](https://circleci.com/gh/change/longlinks/tree/master)
+> This project is no longer being maintained in its current form.  Leaving it here for posterity, but make sure to fork and apply dependency updates if you want to actually use it!
 
 # longlinks
 
